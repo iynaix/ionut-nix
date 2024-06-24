@@ -2,16 +2,17 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
-let
-  unstable = import <nixos-unstable> {};
-in
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-	../../home/ionut/Games/Minecraft/flake.nix
-    ];
+  config,
+  inputs,
+  pkgs,
+  ...
+}:
+{
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+  ];
 
   # Bootloader.
   #Systemd-boot
@@ -31,7 +32,7 @@ in
 
   boot.loader.grub.enable = true;
   boot.loader.grub.devices = [ "nodev" ];
-  boot.loader.grub.efiSupport = true; 
+  boot.loader.grub.efiSupport = true;
   boot.loader.grub.useOSProber = true;
 
   boot.supportedFilesystems = [ "ntfs" ];
@@ -65,39 +66,49 @@ in
 
   # Configure keymap in X11
 
- # services.xserver.enable = true;
- # services.xserver.displayManager.sddm.enable = true;
- # services.xserver.displayManager.sddm.wayland.enable = true;
- # services.xserver.displayManager.sddm.theme = "";
+  # services.xserver.enable = true;
+  # services.xserver.displayManager.sddm.enable = true;
+  # services.xserver.displayManager.sddm.wayland.enable = true;
+  # services.xserver.displayManager.sddm.theme = "";
   services.xserver.videoDrivers = [ "nvidia" ];
- # services.xserver = {
- #   layout = "us";
- #   xkbVariant = "";
- # };
+  # services.xserver = {
+  #   layout = "us";
+  #   xkbVariant = "";
+  # };
   services.greetd = {
-      enable = true;
-      settings = {
-        default_session = {
-          command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --remember-session --cmd Hyprland";
-	  user = "greeter";
-        };
+    enable = true;
+    settings = {
+      default_session = {
+        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --remember-session --cmd Hyprland";
+        user = "greeter";
       };
     };
+  };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.ionut = {
     isNormalUser = true;
     description = "ionut";
-    extraGroups = ["input" "audio" "networkmanager" "wheel" "video" ];
-    packages = with pkgs; [];
+    extraGroups = [
+      "input"
+      "audio"
+      "networkmanager"
+      "wheel"
+      "video"
+    ];
+    packages = with pkgs; [ ];
   };
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
-  nix.settings.experimental-features = [ "nix-command" "flakes"];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
   # List packages installed in system profile.
 
   environment.systemPackages = with pkgs; [
+    inputs.prismlauncher.packages.${pkgs.system}.pollymc
     #bluetooth and sound
     pipewire
     wireplumber
@@ -106,7 +117,7 @@ in
     bluez-tools
     bluez
 
-    #Utils 
+    #Utils
     rar
     unzip
     zip
@@ -156,7 +167,7 @@ in
     webcord
     signal-desktop
     jre
-    neovim 
+    neovim
     inkscape
     libreoffice
     librecad
@@ -189,7 +200,7 @@ in
     clang
     llvm
     cargo
-    gcc 
+    gcc
     cmake
     gnumake
 
@@ -203,14 +214,14 @@ in
     gruvbox-gtk-theme
     gruvbox-dark-gtk
 
-    #Hyprland rice 
+    #Hyprland rice
     qt5.qtwayland
     qt6.qtwayland
     pkgs.dunst
     waybar
     wofi
     pam
-    mpd 
+    mpd
     hyprland
     hypridle
     hyprlock
@@ -234,15 +245,20 @@ in
   programs.neovim.defaultEditor = true;
   #Wayland
   xdg.portal.enable = true;
-  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk];	
+  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
 
   #fonts
   fonts.packages = with pkgs; [
-	(nerdfonts.override { fonts = [ "JetBrainsMono" "Noto" ]; })
+    (nerdfonts.override {
+      fonts = [
+        "JetBrainsMono"
+        "Noto"
+      ];
+    })
   ];
   #PipeWire
   security.rtkit.enable = true;
-  services.flatpak.enable = true; 
+  services.flatpak.enable = true;
   services.pipewire = {
     enable = true;
     audio.enable = true;
@@ -251,14 +267,14 @@ in
     pulse.enable = true;
   };
 
-  services.blueman.enable = true; 
+  services.blueman.enable = true;
 
-  #Asus ctl 
+  #Asus ctl
   services.asusd = {
-	enable = true;
-	profileConfig = "Quiet";
-	userLedModesConfig = "strobe";
-  }; 
+    enable = true;
+    profileConfig = "Quiet";
+    userLedModesConfig = "strobe";
+  };
   #udisks
   services.udisks2.enable = true;
   #SSH config
@@ -266,70 +282,70 @@ in
   programs.ssh.knownHosts.ionut.publicKey = "~/home/ionut/.ssh/keygen";
 
   services.printing.enable = true;
-  services.printing.drivers = [pkgs.hplipWithPlugin];
+  services.printing.drivers = [ pkgs.hplipWithPlugin ];
   services.mpd = {
-	enable = true;
-	startWhenNeeded = true;
+    enable = true;
+    startWhenNeeded = true;
   };
   #Hyprland setup
   programs.hyprland = {
-	enable = true;
-	xwayland.enable = true;
+    enable = true;
+    xwayland.enable = true;
   };
   programs.steam = {
- 	enable = true;
- 	#remotePlay.openFirewall = true; 
- 	#dedicatedServer.openFirewall = true;
+    enable = true;
+    #remotePlay.openFirewall = true;
+    #dedicatedServer.openFirewall = true;
   };
   programs.steam.gamescopeSession.enable = true;
   programs.gamemode.enable = true;
 
   environment.sessionVariables = {
-	WLR_NO_HARDWARE_CURSOR = "1";
-	NIXOS_OZONE_WL = "1";
-	EDITOR = "nvim";
-	VISUAL = "nvim";
-	TERM= "alacritty";
+    WLR_NO_HARDWARE_CURSOR = "1";
+    NIXOS_OZONE_WL = "1";
+    EDITOR = "nvim";
+    VISUAL = "nvim";
+    TERM = "alacritty";
 
   };
   hardware = {
-	opengl.enable = true;
-	#opengl.driSupport = true;
-    	#opengl.driSuppdriSupport32Bit = true;
-	bluetooth.enable = true;
-	bluetooth.powerOnBoot = true;
-	pulseaudio.enable = false;
-	bluetooth.settings = {
-		General = {
-      			Enable = "Source,Sink,Media,Socket";
-    		};
-	};
+    graphics.enable = true;
+    #opengl.driSupport = true;
+    #opengl.driSuppdriSupport32Bit = true;
+    bluetooth.enable = true;
+    bluetooth.powerOnBoot = true;
+    pulseaudio.enable = false;
+    bluetooth.settings = {
+      General = {
+        Enable = "Source,Sink,Media,Socket";
+      };
+    };
   };
   hardware.nvidia = {
-	modesetting.enable = true;
-	powerManagement.enable = false;
-	powerManagement.finegrained = false;
-	open = false;
-	nvidiaSettings = true;
+    modesetting.enable = true;
+    powerManagement.enable = false;
+    powerManagement.finegrained = false;
+    open = false;
+    nvidiaSettings = true;
   };
   hardware.nvidia.prime = {
-	offload = {
-		enable = true;
-		enableOffloadCmd = true;
-		};
-	amdgpuBusId = "PCI:5:0:0";
-	nvidiaBusId = "PCI:1:0:0";	
+    offload = {
+      enable = true;
+      enableOffloadCmd = true;
+    };
+    amdgpuBusId = "PCI:5:0:0";
+    nvidiaBusId = "PCI:1:0:0";
   };
 
   environment.etc = {
-	"wireplumber/bluetooth.lua.d/51-bluez-config.lua".text = ''
-		bluez_monitor.properties = {
-			["bluez5.enable-sbc-xq"] = true,
-			["bluez5.enable-msbc"] = true,
-			["bluez5.enable-hw-volume"] = true,
-			["bluez5.headset-roles"] = "[ hsp_hs hsp_ag hfp_hf hfp_ag ]"
-		}
-	'';
+    "wireplumber/bluetooth.lua.d/51-bluez-config.lua".text = ''
+      bluez_monitor.properties = {
+      	["bluez5.enable-sbc-xq"] = true,
+      	["bluez5.enable-msbc"] = true,
+      	["bluez5.enable-hw-volume"] = true,
+      	["bluez5.headset-roles"] = "[ hsp_hs hsp_ag hfp_hf hfp_ag ]"
+      }
+    '';
   };
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.

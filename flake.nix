@@ -8,16 +8,16 @@
       # inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-outputs = inputs@{nixpkgs, prismlauncher, ...}: {
-    nixosConfigurations.foo = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      specialArgs = { inherit inputs; };
+  outputs =
+    inputs@{ nixpkgs, ... }:
+    {
+      nixosConfigurations.foo = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = {
+          inherit inputs;
+        };
 
-      modules = [
-        ({pkgs, ...}: {
-          environment.systemPackages = [inputs.pollymc.overlays.default ];
-        })
-      ];
+        modules = [ ./configuration.nix ];
+      };
     };
-  };
 }
